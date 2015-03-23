@@ -1,0 +1,28 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Application.index()
+POST	/addMetadica/:idDisciplina	controllers.Application.addMetadica(idDisciplina : Long)
+GET		/disciplina/:idDisciplina/:idDica/:v	controllers.Application.votarMetadica(idDisciplina : Long, idDica : Long, v : Integer)
+POST    /disciplina/adicionaComentario/:idDisciplina/:idDica  controllers.Application.adicionarComentario(idDisciplina : Long, idDica : Long)
+
+# Tema Page
+GET		/tema/:id					controllers.Temas.getPaginaTema(id : Long)
+GET		/tema/:id/:v				controllers.Temas.votar(id : Long, v : Integer)
+GET		/tema/:idTema/:idDica/:v	controllers.Temas.votarDica(idTema : Long, idDica : Long, v : Integer)
+POST    /dicaMaterial/:id           controllers.Temas.adicionarDicaMaterial(id : Long)
+POST    /dicaDisciplina/:id         controllers.Temas.adicionarDicaDisciplina(id : Long)
+POST    /dicaAssunto/:id            controllers.Temas.adicionarDicaAssunto(id : Long)
+POST    /dicaConselho/:id           controllers.Temas.adicionarDicaConselho(id : Long)
+POST    /adicionaComentario/:idTema/:idDica  controllers.Temas.adicionarComentario(idTema : Long, idDica : Long)
+
+# Login
+GET     /login                      controllers.Login.show()
+POST    /login                      controllers.Login.authenticate()
+GET		/logout						controllers.Login.logout()
+POST    /signUp                     controllers.Login.signUp()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

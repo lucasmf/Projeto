@@ -1,0 +1,218 @@
+@(usuario : Usuario, disciplina : Disciplina, formComentario : Form[Comentario])
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<title>Portal do Leite - Olá @usuario.getNome</title>
+		<meta name="generator" content="Bootply" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	</head>
+	<body>
+<!-- Header -->
+<div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-toggle"></span>
+      </button>
+      <a class="navbar-brand" href="#">Portal do Leite - SI</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        
+        <li class="dropdown">
+          <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">
+            <i class="glyphicon glyphicon-user"></i> @usuario.getNome <span class="caret"></span></a>
+          <ul id="g-account-menu" class="dropdown-menu" role="menu">
+            <li><a href="/logout">logout</a></li>
+            <li><a href="#">Página Principal</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div><!-- /container -->
+</div>
+<!-- /Header -->
+
+<!-- Main -->
+<div class="container">
+  
+  <!-- upper section -->
+  <div class="row">
+	<div class="col-sm-3">
+      <!-- left -->
+      <h3>Temas</h3>
+      <hr>
+      
+      <ul class="nav nav-stacked">
+      	@for(tema <- disciplina.getTemas) {
+      		<li><a href='@routes.Temas.getPaginaTema(tema.getId)'><i class="glyphicon glyphicon-link"></i> @tema.getNome</a></li>
+      	}		
+      </ul>
+      
+      <hr>
+      
+  	</div><!-- /span-3 -->
+    <div class="col-sm-9">
+      	
+      <!-- column 2 -->	
+       <h3><i class="glyphicon glyphicon-dashboard"></i> Metadicas</h3>  
+            
+       <hr>
+      
+	   <div class="row">
+            <!-- center left-->	
+         	<div class="col-md-7"> 
+				@for(dica <- disciplina.getMetadicas) {
+					@if(dica.isApropriada) {
+	             	<div class="panel panel-default" style="border-color:@dica.getColor">
+	                  <div class="panel-heading" style="background-color:@dica.getBackgroundColor">
+	                  	<h4>Meta Dica # @disciplina.getMetadicas.indexOf(dica)
+	           				<div class="pull-right">
+				                <a href="/disciplina/@disciplina.getId()/@dica.getId()/1"><span style="color:green" class="glyphicon glyphicon-success glyphicon-chevron-up"></span></a>
+				            	@dica.getAprovacao%  
+				           		<a href="/disciplina/@disciplina.getId()/@dica.getId()/0"><span style="color:red" class="glyphicon glyphicon-danger glyphicon-chevron-down"></span></a>
+		               		</div>
+		                </h4>
+	                  </div>
+	                  <div class="panel-body">
+		                  <ul class="list-group">
+			                  <li class="list-group-item" data-toggle="collapse" data-target="#dicasAgregadas@dica.getId">
+	                          		@dica.toString()
+	                          		<div class="pull-right">
+	                          		<span class="glyphicon glyphicon-success glyphicon-chevron-down"></span>
+	                          		</div>
+	                          </li>
+	                          <div class="collapse" id="dicasAgregadas@dica.getId()">
+		                          @for(dicaAgregada <- dica.getDicasAgregadas) {
+		                          	 <li class="list-group-item" style="background-color:@dica.getBackgroundColor"> @dicaAgregada.toString</li>
+		                          }
+	                          </div>
+                          </ul>
+	                  </div><!--/panel-body-->
+	                  <div class="panel-footer">
+	                  	
+	                    <a title="Escrever comentário" data-toggle="modal" href="#addComentarioModal@dica.getId">Comentar <i class="glyphicon glyphicon-pencil"></i></a>
+	                  	<div class="modal" id="addComentarioModal@dica.getId">
+						  <div class="modal-dialog">
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						        <h4 class="modal-title">Adiconar Comentário</h4>
+						      </div>
+						      <div class="modal-body">
+						        @if(dica.usuarioPodeComentar(usuario.getId)) {
+						       		<form action="@routes.Application.adicionarComentario(disciplina.getId, dica.getId)" method="POST">
+										<input type="text" name="comentario" placeholder="Comentário" value='@formComentario("comentario").value'
+			                  				class="form-control">
+										<br>
+										<div align="center"><input type="submit" class="btn btn-primary" value="Comentar"></div>
+									</form>
+								} else {
+									<div class="alert alert-warning" role="alert">Você precisa dar um voto negativo na dica para pode comentar.</div>
+								
+									<input type="text" name="comentarioDisabled" placeholder="Comentário" class="form-control" disabled>
+									<br>
+									<div align="center"><input type="submit" class="btn btn-primary" value="Comentar" disabled></div>
+								}
+						      </div>
+						      <div class="modal-footer">
+						      </div>
+						    </div><!-- /.modal-content -->
+						  </div><!-- /.modal-dalog -->
+						</div><!-- /.modal -->
+	                  	&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+	                  	
+	          		    <a title="Escrever comentário" data-toggle="modal" href="#visualizarComentariosModal@dica.getId">Visualizar comentários <i class="glyphicon glyphicon-list-alt"></i></a>
+	                  	<div class="modal" id="visualizarComentariosModal@dica.getId">
+						  <div class="modal-dialog">
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						        <h4 class="modal-title">Razões de discordância</h4>
+						      </div>
+						      <div class="modal-body">
+						        @for(comment <- dica.getComentarios()) {
+						        	@comment
+						        	<hr>
+						        }
+						      </div>
+						    </div><!-- /.modal-content -->
+						  </div><!-- /.modal-dalog -->
+						</div><!-- /.modal -->
+	                  	<div class="pull-right">
+						     <a title="Denunciar abuso" href="/disciplina/@disciplina.getId()/@dica.getId()/2"><i class="glyphicon glyphicon-ban-circle"></i></a>               
+		              	</div>
+	                  	
+	                  </div>
+	               </div><!--/panel-->    
+	           		}
+				}
+          	</div><!--/col-->
+         
+            <!--center-right-->
+        	<div class="col-md-5">
+              
+                <ul class="nav nav-justified">
+         			<li><a title="Add Metadica" data-toggle="modal" href="#addMetaDica"><span style="color:#FF3399" class="glyphicon glyphicon-plus-sign"></span> Adiconar Metadica</a></li>
+       			</ul>  
+       			  
+                <hr>
+              
+                
+              
+			</div><!--/col-span-6-->
+     
+       </div><!--/row-->
+  	</div><!--/col-span-9-->
+    
+  </div><!--/row-->
+  <!-- /upper section -->
+
+<div class="modal" id="addMetaDica">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Adicionar Metadica</h4>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="@routes.Application.addMetadica(disciplina.getId)">
+			<input type="text" name="comentario" placeholder="Comentário" class="form-control">
+			<hr>
+			<p>Metadicas</p>
+			<ul class="list-group">
+			@for(metadica <- disciplina.getMetadicas) {
+				<li class="list-group-item"><input type="checkbox" name="dicas[]" value="@metadica.getId"> @metadica.toString</li>
+			}
+			</ul>
+			@for(tema <- disciplina.getTemas) {
+				<p>@tema.getNome</p>
+				<ul class="list-group">
+					@for(dica <- tema.getDicas) {
+						<li class="list-group-item" style="background-color:@dica.getBackgroundColor"><input type="checkbox" name="dicas[]" value="@dica.getId"> @dica.toString</li>
+					}
+				</ul>
+			}
+			<br>
+			<div align="center"><input type="submit" class="btn btn-primary" value="Submeter"></div>
+		</form>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dalog -->
+</div><!-- /.modal -->
+
+
+
+  
+	 <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	</body>
+</html>
+
+
